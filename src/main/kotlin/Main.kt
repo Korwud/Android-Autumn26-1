@@ -18,20 +18,47 @@ fun main(args: Array<String>) {
     val result = CsvParser("src/main/resources/fakePlayersDirty.csv").parseFile();
     val resolver = Resolver(result.first, result.second.values.toMutableList());
 
-    println("getCountWithoutAgency: ${resolver.getCountWithoutAgency()}");
-    println("getBestScorerDefender: ${resolver.getBestScorerDefender()}");
-    println("getTheExpensiveGermanPlayerPosition: ${resolver.getTheExpensiveGermanPlayerPosition()}");
-    println("getTheRudestTeam: ${resolver.getTheRudestTeam()}");
+    println("Количество игроков, интересы которых не представляет агентство: ${resolver.getCountWithoutAgency()}");
+    println("Автор наибольшего числа голов среди защитников и их количество: ${resolver.getBestScorerDefender()}");
+    println("Русское название позиции самого дорогого немецкого игрока: ${resolver.getTheExpensiveGermanPlayerPosition()}");
 
+    println()
+
+    println("Команда с наибольшим средним числом красных карточек на одного игрока:");
+    val rudeTeam = resolver.getTheRudestTeam()
+    println("Название: ${rudeTeam.name}")
+    println("Город: ${rudeTeam.city}")
+
+    println()
+
+    println("Средняя трансферная стоимость по позициям:");
     val positions = resolver.getAverageTransferCostByPosition()
-    println("getAverageTransferCostByPosition:");
     for (position in positions) {
         println("${position.key}: ${"%.2f".format(position.value)}")
     }
 
-    println("getMostValuablePlayers: ${resolver.getMostValuablePlayers()}");
-    println("getMostPopularAgencyByCountry: ${resolver.getMostPopularAgencyByCountry()}");
-    println("getGoalsShareByMedianCost: ${resolver.getGoalsShareByMedianCost()}");
+    println()
+
+    println("Топ-3 самых полезных игроков:");
+    val topPlayers = resolver.getMostValuablePlayers()
+    for (player in topPlayers) {
+        println(player)
+    }
+
+    println()
+
+    println("Для каждой страны — самое популярное среди её игроков агентство:");
+    val agencies = resolver.getMostPopularAgencyByCountry()
+    for (entry in agencies.entries) {
+        println("${entry.key}: ${entry.value}")
+    }
+
+    println()
+
+    println("Медианная трансферная стоимость:");
+    val medianCost = resolver.getGoalsShareByMedianCost()
+    println("Доля голов, забитых игроками не дороже медианы: ${medianCost.first}")
+    println("Доля голов, забитых игроками дороже медианы: ${medianCost.second}")
 
     baseVisualization(resolver.players, resolver.teams)
     advanceVizualization(resolver.players, resolver.teams)
@@ -68,7 +95,7 @@ fun advanceVizualization(players: MutableList<Player>, teams: MutableList<Team>)
         .filter { it.position == Position.FORWARD }
         .sortedBy { it.transferCost }
 
-    val windowWidth = 2
+    val windowWidth = 3
 
     val movingAvg = forwards
         .map { it.goals.toDouble() }
