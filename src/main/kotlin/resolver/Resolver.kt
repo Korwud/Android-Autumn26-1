@@ -7,49 +7,22 @@ import parser.CsvParser
 
 class Resolver(val players: MutableList<Player>, val teams: MutableList<Team>) : IResolver {
     override fun getCountWithoutAgency() : Int {
-        var count = 0;
-        for (player in players) {
-            if (player.agency == null) {
-                count += 1;
-            }
-        }
-        return count;
+        return players.count { it.agency == null }
     }
 
     override fun getBestScorerDefender(): Pair<String, Int> {
-        var defender = "";
-        var goals = 0;
-        for (player in players) {
-            if (player.position.position == "Защитник" && player.goals > goals) {
-                defender = player.name;
-                goals = player.goals;
-            }
-        }
-        return Pair(defender, goals);
+        val bestDefender = players.filter { it.position.name == "DEFENDER" }.maxBy { it.goals }
+        return bestDefender.name to bestDefender.goals
     }
 
     override fun getTheExpensiveGermanPlayerPosition(): String {
-        var position = "";
-        var sum = 0;
-        for (player in players) {
-            if (player.nationality == "Germany" && player.transferCost > sum) {
-                position = player.position.position;
-                sum = player.transferCost;
-            }
-        }
-        return position;
+        return players.filter { it.nationality == "Germany" }.maxBy { it.transferCost }.position.position
     }
 
     override fun getTheRudestTeam(): Team {
-        val rudeTeams = mutableMapOf<Team, Double>();
-        for (team in teams) {
-            var redCardsCount = 0;
-            for (player in team.players) {
-                redCardsCount += player.redCards;
-            }
-            rudeTeams[team] = (redCardsCount / team.players.size).toDouble();
+        return teams.maxBy { team ->
+            team.players.sumOf { it.redCards }.toDouble() / team.players.size
         }
-        return rudeTeams.maxBy { it.value }.key;
     }
 
     override fun getAverageTransferCostByPosition(): Map<Position, Double> {
@@ -64,8 +37,7 @@ class Resolver(val players: MutableList<Player>, val teams: MutableList<Team>) :
 
     override fun getMostValuablePlayers(): List<Player> {
         val top3 = players
-            .sortedWith(
-                compareByDescending<Player> { it.goals + 2 * it.assists }
+            .sortedWith(compareByDescending<Player> { it.goals + 2 * it.assists }
                     .thenBy { it.name }
             )
             .take(3);
