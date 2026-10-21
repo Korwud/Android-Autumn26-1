@@ -7,12 +7,13 @@ import java.io.File
 
 class CsvParser(val filename: String) {
     val teams =  mutableMapOf<String, Team>();
+    val teamPlayers = mutableMapOf<String, MutableList<Player>>()
     val allPlayers = mutableListOf<Player>();
     var skippedCount = 0;
 
-    fun parseFile() : Triple<MutableList<Player>, MutableMap<String, Team>, Int> {
+    fun parseFile() : Triple<List<Player>, List<Team>, Int> {
         parse();
-        return Triple(allPlayers, teams, skippedCount);
+        return Triple(allPlayers.toList(), teams.values.toList(), skippedCount);
     }
 
     fun parse() {
@@ -57,9 +58,17 @@ class CsvParser(val filename: String) {
                     teams[teamName] = team;
                 }
 
+                if (!teamPlayers.contains(teamName)) {
+                    teamPlayers[teamName] = mutableListOf<Player>()
+                }
+
                 allPlayers.add(player);
-                teams[teamName]?.players?.add(player);
+                teamPlayers[teamName]?.add(player)
             }
+        }
+
+        for ((teamName, team) in teams) {
+            team.players = teamPlayers[teamName]!!.toList()
         }
     }
 }

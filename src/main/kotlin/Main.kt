@@ -16,7 +16,7 @@ import javax.swing.JFrame
 
 fun main(args: Array<String>) {
     val result = CsvParser("src/main/resources/fakePlayersDirty.csv").parseFile();
-    val resolver = Resolver(result.first, result.second.values.toMutableList());
+    val resolver = Resolver(result.first, result.second);
 
     println("Количество игроков, интересы которых не представляет агентство: ${resolver.getCountWithoutAgency()}");
     println("Автор наибольшего числа голов среди защитников и их количество: ${resolver.getBestScorerDefender()}");
@@ -64,7 +64,7 @@ fun main(args: Array<String>) {
     advanceVizualization(resolver.players, resolver.teams)
 }
 
-fun baseVisualization(players: MutableList<Player>, teams: MutableList<Team>) {
+fun baseVisualization(players: List<Player>, teams: List<Team>) {
     val dataset = DefaultCategoryDataset()
     val teamsByTransfer = teams.sortedBy{ team ->
         team.players.sumOf { it.transferCost }
@@ -90,7 +90,7 @@ fun baseVisualization(players: MutableList<Player>, teams: MutableList<Team>) {
     frame.isVisible = true
 }
 
-fun advanceVizualization(players: MutableList<Player>, teams: MutableList<Team>) {
+fun advanceVizualization(players: List<Player>, teams: List<Team>) {
     val forwards = players
         .filter { it.position == Position.FORWARD }
         .sortedBy { it.transferCost }

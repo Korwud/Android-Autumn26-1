@@ -1,3 +1,7 @@
 package model
 
-data class Team(val name: String, val city: String, val players: MutableList<Player> = mutableListOf<Player>())
+data class Team(
+    val name: String,
+    val city: String,
+    var players: List<Player> = listOf<Player>()
+)

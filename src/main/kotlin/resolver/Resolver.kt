@@ -5,18 +5,23 @@ import model.Position
 import model.Team
 import parser.CsvParser
 
-class Resolver(val players: MutableList<Player>, val teams: MutableList<Team>) : IResolver {
+class Resolver(val players: List<Player>, val teams: List<Team>) : IResolver {
     override fun getCountWithoutAgency() : Int {
         return players.count { it.agency == null }
     }
 
     override fun getBestScorerDefender(): Pair<String, Int> {
-        val bestDefender = players.filter { it.position.name == "DEFENDER" }.maxBy { it.goals }
+        val bestDefender = players
+            .filter { it.position.name == "DEFENDER" }
+            .maxBy { it.goals }
         return bestDefender.name to bestDefender.goals
     }
 
     override fun getTheExpensiveGermanPlayerPosition(): String {
-        return players.filter { it.nationality == "Germany" }.maxBy { it.transferCost }.position.position
+        return players
+            .filter { it.nationality == "Germany" }
+            .maxBy { it.transferCost }
+            .position.position
     }
 
     override fun getTheRudestTeam(): Team {
